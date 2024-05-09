@@ -3,7 +3,7 @@ import cv2
     # Converte para cinza
 def process_quadro(frame):
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    return gray_framew
+    return gray_frame
 
 def process_video(input_video_path, output_video_path):
     # abrir video
@@ -34,4 +34,4 @@ def process_video(input_video_path, output_video_path):
     out.release()
 
 # processar o video e a saida sera salva em output.mp4
-process_video('alokk.mp4', 'output.mp4')
+process_video('./videos/alokk.mp4', './out/output.mp4')
