@@ -23,10 +23,11 @@
 
 # 📝 Descrição
 
+<p align="center">
 Objetivo do projeto final e entrega um algoritmo de processamento de video de forma eficaz fazendo filtros no video
 e um possivel processamento em imagem ao vivo 
 ![alt text](./assets/image.png)
-
+</p>
 ## 🚀 Tecnologias
 
 
