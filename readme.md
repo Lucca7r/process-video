@@ -47,11 +47,7 @@ e um possivel processamento em imagem ao vivo
 - Colaboradores que fizeram parte do projeto.
 <br><br>
 
-     -  [@Lorrana Nasareth](https://github.com/LorranaNS)
-    <br><br>
      -  [@Luan Medrado](https://github.com/LuanMedrado8)
-        <br><br>
-     -  [@Guilherme Braga](https://github.com/guiibrag4)
         <br><br>
         
  
