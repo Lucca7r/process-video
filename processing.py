@@ -49,4 +49,4 @@ def process_video(input_video_path, output_video_path):
     print("Tempo de processamento: ", format_time(final - inicial))
 
 # processar o video e a saida sera salva em output.mp4
-process_video('./videos/alokk.mp4', './out/output1.mp4')
+process_video('./videos/Resident_Evil_2.mp4', './out/output1.mp4')
