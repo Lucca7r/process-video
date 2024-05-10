@@ -1,4 +1,13 @@
 import cv2
+import time
+
+
+def format_time(seconds):
+    hours = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+    return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
     # Converte para cinza
 def process_quadro(frame):
@@ -6,8 +15,10 @@ def process_quadro(frame):
     return gray_frame
 
 def process_video(input_video_path, output_video_path):
+    inicial = time.time()
     # abrir video
     video = cv2.VideoCapture(input_video_path)
+    
 
     # pega altura e largura do video e fps 
     width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -32,6 +43,10 @@ def process_video(input_video_path, output_video_path):
     # liberar os objetos
     video.release()
     out.release()
+    
+    # tempo final
+    final = time.time()
+    print("Tempo de processamento: ", format_time(final - inicial))
 
 # processar o video e a saida sera salva em output.mp4
-process_video('./videos/alokk.mp4', './out/output.mp4')
+process_video('./videos/Resident_Evil_2.mp4', './out/output1.mp4')
