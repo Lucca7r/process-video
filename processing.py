@@ -1,6 +1,7 @@
 import cv2
 import time
-
+import threading
+import queue
 
 def format_time(seconds):
     hours = seconds // 3600
@@ -9,44 +10,63 @@ def format_time(seconds):
     seconds %= 60
     return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
-    # Converte para cinza
 def process_quadro(frame):
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     return gray_frame
 
 def process_video(input_video_path, output_video_path):
     inicial = time.time()
-    # abrir video
-    video = cv2.VideoCapture(input_video_path)
-    
 
-    # pega altura e largura do video e fps 
+    video = cv2.VideoCapture(input_video_path)
+
     width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = video.get(cv2.CAP_PROP_FPS)
 
-    # definir codec para o video de saida 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
     out = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height), isColor=False)
 
-    while(video.isOpened()):
-        ret, frame = video.read()
-        if ret==True:
-            # processar o quadro
+    frame_queue = queue.Queue(maxsize=10)
+    output_queue = queue.Queue(maxsize=10)
+
+    def read_frames():
+        while True:
+            ret, frame = video.read()
+            if ret:
+                frame_queue.put(frame)
+            else:
+                break
+        # sinaliza que todos os quadros foram lidos
+        frame_queue.put(None)  
+
+    def process_frames():
+        while True:
+            frame = frame_queue.get()
+            if frame is None:
+                break
             processed_frame = process_quadro(frame)
+            output_queue.put(processed_frame)
+            # sinaiza que o quadro foi processado
+        output_queue.put(None)  
+        
 
-            # escrever o quadro processado no video de saida
-            out.write(processed_frame)
-        else:
+    # iniciar as threads
+    threading.Thread(target=read_frames).start()
+    threading.Thread(target=process_frames).start()
+    threading.Thread(target=process_frames).start()
+    threading.Thread(target=process_frames).start()
+
+    # aguardar o término das threads
+    while True:
+        processed_frame = output_queue.get()
+        if processed_frame is None:
             break
+        out.write(processed_frame)
 
-    # liberar os objetos
     video.release()
     out.release()
-    
-    # tempo final
+
     final = time.time()
     print("Tempo de processamento: ", format_time(final - inicial))
 
-# processar o video e a saida sera salva em output.mp4
 process_video('./videos/Resident_Evil_2.mp4', './out/output1.mp4')
