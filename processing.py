@@ -16,7 +16,7 @@ def process_quadro(frame):
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     return gray_frame
 
-def process_video(input_video_path, output_video_path):
+def process_video(input_video_path, output_video_path, batch_size):
     inicial = time.time()
 
     # abrir o vídeo
@@ -44,24 +44,29 @@ def process_video(input_video_path, output_video_path):
         # sinaliza que todos os quadros foram lidos
         frame_queue.put(None)  
 
-    def process_frames():
+    def process_frames(batch_size):
         while True:
-            frame = frame_queue.get() # area crítica (bloqueia se a fila estiver vazia)
-            if frame is None:
+            frames = []
+            for _ in range(batch_size):
+                frame = frame_queue.get() # area crítica (bloqueia se a fila estiver vazia)
+                if frame is None:
+                    break
+                frames.append(frame)
+            if not frames:
                 break
-            processed_frame = process_quadro(frame)
-            output_queue.put(processed_frame) # colocar o quadro processado na fila
+            processed_frames = [process_quadro(frame) for frame in frames]
+            for processed_frame in processed_frames:
+                output_queue.put(processed_frame) # colocar o quadro processado na fila
         # sinaiza que o quadro foi processado
         output_queue.put(None)  
-        
 
     # iniciar as threads
     threading.Thread(target=read_frames).start()
-    threading.Thread(target=process_frames).start()
-    threading.Thread(target=process_frames).start()
-    threading.Thread(target=process_frames).start()
-    threading.Thread(target=process_frames).start()
-    threading.Thread(target=process_frames).start()
+    threading.Thread(target=process_frames, args=(batch_size,)).start()
+    threading.Thread(target=process_frames, args=(batch_size,)).start()
+    threading.Thread(target=process_frames, args=(batch_size,)).start()
+    threading.Thread(target=process_frames, args=(batch_size,)).start()
+    threading.Thread(target=process_frames, args=(batch_size,)).start()
     
     # aguardar o término das threads
     while True:
@@ -76,4 +81,4 @@ def process_video(input_video_path, output_video_path):
     final = time.time()
     print("Tempo de processamento: ", format_time(final - inicial))
 
-process_video('./videos/Resident_Evil_2.mp4', './out/output1.mp4')
+process_video('./videos/Resident_Evil_2.mp4', './out/output1.mp4', 10)
