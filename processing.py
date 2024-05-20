@@ -16,7 +16,7 @@ def process_quadro(frame):
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     return gray_frame
 
-def process_video(input_video_path, output_video_path, batch_size):
+def process_video(input_video_path, output_video_path, batch_size, num_threads):
     inicial = time.time()
 
     # abrir o vídeo
@@ -31,8 +31,8 @@ def process_video(input_video_path, output_video_path, batch_size):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
     out = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height), isColor=False)
 
-    frame_queue = queue.Queue(maxsize=10)
-    output_queue = queue.Queue(maxsize=10)
+    frame_queue = queue.Queue(maxsize=900)
+    output_queue = queue.Queue(maxsize=900)
 
     def read_frames():
         while True:
@@ -42,7 +42,8 @@ def process_video(input_video_path, output_video_path, batch_size):
             else:
                 break
         # sinaliza que todos os quadros foram lidos
-        frame_queue.put(None)  
+        for _ in range(num_threads):
+            frame_queue.put(None)  
 
     def process_frames(batch_size):
         while True:
@@ -62,12 +63,9 @@ def process_video(input_video_path, output_video_path, batch_size):
 
     # iniciar as threads
     threading.Thread(target=read_frames).start()
-    threading.Thread(target=process_frames, args=(batch_size,)).start()
-    threading.Thread(target=process_frames, args=(batch_size,)).start()
-    threading.Thread(target=process_frames, args=(batch_size,)).start()
-    threading.Thread(target=process_frames, args=(batch_size,)).start()
-    threading.Thread(target=process_frames, args=(batch_size,)).start()
-    
+    for _ in range(num_threads):
+        threading.Thread(target=process_frames, args=(batch_size,)).start()
+
     # aguardar o término das threads
     while True:
         processed_frame = output_queue.get()
@@ -81,4 +79,4 @@ def process_video(input_video_path, output_video_path, batch_size):
     final = time.time()
     print("Tempo de processamento: ", format_time(final - inicial))
 
-process_video('./videos/Resident_Evil_2.mp4', './out/output1.mp4', 10)
+process_video('./videos/Resident_Evil_2.mp4', './out/output1.mp4', 100, 4)
