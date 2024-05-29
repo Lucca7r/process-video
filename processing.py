@@ -35,8 +35,8 @@ def process_video(input_video_path, output_video_path, filter_type):
             if frame is None:
                 break
             
-            processed_frame = None
-
+            
+            
             if filter_type == 'gray':
                 gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 processed_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2BGR)
@@ -49,7 +49,9 @@ def process_video(input_video_path, output_video_path, filter_type):
                                         [0.393, 0.769, 0.189]])
                 # Aplicar o filtro sépia
                 processed_frame = cv2.transform(frame, sepia_matrix)
-
+            elif filter_type == 'blur':
+                processed_frame = cv2.GaussianBlur(frame, (15, 15), 30)
+            
             output_queue.put(processed_frame)
         output_queue.put(None)
 
@@ -72,4 +74,4 @@ def process_video(input_video_path, output_video_path, filter_type):
     print("Tempo de processamento: ", format_time(final - inicial))
 
 # Para usar o filtro cinza
-process_video('./videos/alokk.mp4', './out/output4.mp4', 'sepia')
+process_video('./videos/alokk.mp4', './out/output4.mp4', 'dilate')
