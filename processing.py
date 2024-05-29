@@ -2,6 +2,7 @@ import cv2
 import threading
 import queue
 import time
+import numpy as np
 
 # Fila de entrada e saída
 input_queue = queue.Queue(maxsize=10)
@@ -33,12 +34,21 @@ def process_video(input_video_path, output_video_path, filter_type):
             frame = input_queue.get()
             if frame is None:
                 break
+            
+            processed_frame = None
 
             if filter_type == 'gray':
                 gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 processed_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2BGR)
             elif filter_type == 'negative':
                 processed_frame = 255 - frame
+            elif filter_type == 'sepia':
+                # Criar a matriz de transformação para o filtro sépia
+                sepia_matrix = np.array([[0.272, 0.534, 0.131],
+                                        [0.349, 0.686, 0.168],
+                                        [0.393, 0.769, 0.189]])
+                # Aplicar o filtro sépia
+                processed_frame = cv2.transform(frame, sepia_matrix)
 
             output_queue.put(processed_frame)
         output_queue.put(None)
@@ -62,4 +72,4 @@ def process_video(input_video_path, output_video_path, filter_type):
     print("Tempo de processamento: ", format_time(final - inicial))
 
 # Para usar o filtro cinza
-process_video('./videos/Resident_Evil_2.mp4', './out/output2.mp4', 'negative')
+process_video('./videos/alokk.mp4', './out/output4.mp4', 'sepia')
