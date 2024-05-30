@@ -86,4 +86,4 @@ def process_video(input_video_path, output_video_path, filter_type):
     print("Tempo de processamento: ", format_time(final - inicial))
 
 # Para usar o filtro cinza
-process_video('./videos/alokk.mp4', './out/output4.mp4', 'dilate')
+process_video('./videos/alokk.mp4', './out/output4.mp4', 'gray')
