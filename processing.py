@@ -12,6 +12,24 @@ output_queue = queue.Queue(maxsize=10)
 def format_time(seconds):
     return time.strftime("%H:%M:%S", time.gmtime(seconds))
 
+def apply_grayscale(frame):
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    return gray_frame
+
+def apply_negative(frame):
+    return 255 - frame
+
+def apply_sepia(frame):
+    sepia_matrix = np.array([
+        [0.272, 0.534, 0.131],
+        [0.349, 0.686, 0.168],
+        [0.393, 0.769, 0.189]
+    ])
+    return cv2.transform(frame, sepia_matrix)
+
+def apply_blur(frame):
+    return cv2.GaussianBlur(frame, (15, 15), 30)
+
 def process_video(input_video_path, output_video_path, filter_type):
     inicial = time.time()
     video = cv2.VideoCapture(input_video_path)
@@ -38,19 +56,13 @@ def process_video(input_video_path, output_video_path, filter_type):
             
             
             if filter_type == 'gray':
-                gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                processed_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2BGR)
+                processed_frame = apply_grayscale(frame)
             elif filter_type == 'negative':
-                processed_frame = 255 - frame
+                processed_frame = apply_negative(frame)
             elif filter_type == 'sepia':
-                # Criar a matriz de transformação para o filtro sépia
-                sepia_matrix = np.array([[0.272, 0.534, 0.131],
-                                        [0.349, 0.686, 0.168],
-                                        [0.393, 0.769, 0.189]])
-                # Aplicar o filtro sépia
-                processed_frame = cv2.transform(frame, sepia_matrix)
+                processed_frame = apply_sepia(frame)
             elif filter_type == 'blur':
-                processed_frame = cv2.GaussianBlur(frame, (15, 15), 30)
+                processed_frame = apply_blur(frame)
             
             output_queue.put(processed_frame)
         output_queue.put(None)
