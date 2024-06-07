@@ -4,12 +4,7 @@ import threading
 import queue
 
 def format_time(seconds):
-    # converte segundos para horas, minutos e segundos deixa bonito kkk
-    hours = seconds // 3600
-    seconds %= 3600
-    minutes = seconds // 60
-    seconds %= 60
-    return "%02d:%02d:%02d" % (hours, minutes, seconds)
+    return time.strftime("%H:%M:%S", time.gmtime(seconds))
 
 def process_quadro(frame):
     # converter o quadro para escala de cinza
@@ -76,4 +71,4 @@ def process_video(input_video_path, output_video_path):
     final = time.time()
     print("Tempo de processamento: ", format_time(final - inicial))
 
-process_video('./videos/Resident_Evil_2.mp4', './out/output1.mp4')
+process_video('./out/parte_1.mp4', './out/output1.mp4')
