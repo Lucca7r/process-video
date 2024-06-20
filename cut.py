@@ -26,29 +26,6 @@ def split_video(video_path, output_dir, num_parts=8):
     return output_files  # Retorna a lista de caminhos dos arquivos
 
 
-from moviepy.video.fx.all import blackwhite
-
-def convert_to_bw(video_path, output_path):
-    clip = VideoFileClip(video_path)
-    bw_clip = clip.fx(blackwhite)  # Converte o vídeo para preto e branco
-    bw_clip.write_videofile(output_path)  # Salva o vídeo convertido
-
-def process_videos(video_paths, output_dir):
-    inicio = time.time()
-    threads = []
-    for i, video_path in enumerate(video_paths):
-        output_path = os.path.join(output_dir, f"bw_parte_{i+1}.mp4")
-        thread = threading.Thread(target=convert_to_bw, args=(video_path, output_path))  # Cria uma nova thread
-        thread.start()  # Inicia a thread
-        threads.append(thread)
-
-    for thread in threads:
-        thread.join() 
-
-    final = time.time()
-    
-    print("Tempo de processamento: ", format_time(final - inicio))
-
 # Exemplo de uso
 video_path = "./videos/Resident_Evil_2.mp4" 
 output_dir = "./cut"  
